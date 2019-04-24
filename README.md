@@ -1,4 +1,4 @@
-# libtrashcan
+# libtrashcan :wastebasket:
 libtrashcan is a cross-platform C library for soft deleting files and directories to the trashcan. 
 
 ## Supported Operating Systems
@@ -27,6 +27,8 @@ cd ./build
 cmake ..
 cmake --build . --config Release
 ```
+
+The example project is a CLI application that takes a path to a file or directory as argument and tries to move it to the trash.
 
 ## License
 Libtrashcan is licensed under the [MIT License](LICENSE). This license is compatible with GPL.
