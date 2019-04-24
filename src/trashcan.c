@@ -382,7 +382,6 @@ error_m1:
 static int get_mountpoint(dev_t device, char **mount_dir)
 {
 	int status = -1;
-	unsigned char mnt_found = 0;
 	struct stat mnt_stat;
 	*mount_dir = NULL;
 
@@ -399,15 +398,15 @@ static int get_mountpoint(dev_t device, char **mount_dir)
 		if (lstat(mount_entry->mnt_dir, &mnt_stat)) { goto error_0; }
 		if (device == mnt_stat.st_dev)
 		{
-			mnt_found = 1;
 			break;
 		}
 	}
 
-	if (!mnt_found) { goto error_0; }
+	if (mount_entry == NULL) { goto error_0; }
 	if (asprintf(mount_dir, "%s", mount_entry->mnt_dir) < 0) { HANDLE_ERROR(*mount_dir, NULL, error_0) }
 #else
 	size_t i = 0;
+	unsigned char mnt_found = 0;
 	struct statfs* mounts;
 	int num_mounts = getmntinfo(&mounts, MNT_WAIT);
 	if (num_mounts < 0) { goto error_0; }
