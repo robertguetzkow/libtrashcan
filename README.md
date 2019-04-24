@@ -1,4 +1,4 @@
-# libtrashcan :wastebasket:
+# libtrashcan
 libtrashcan is a cross-platform C library for soft deleting files and directories to the trashcan. 
 
 ## Supported Operating Systems
