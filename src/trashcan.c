@@ -626,7 +626,7 @@ static int escape_path(const char *str, char **str_escaped)
 		}
 		else
 		{
-			snprintf(&((*str_escaped)[idx]), 4, "%%%02hhX", str[i]); /* 3 chars + '\0' */
+			snprintf(&((*str_escaped)[idx]), 4, "%%%02hhX", (unsigned char) str[i]); /* 3 chars + '\0' */
 			idx += 3;
 		}
 	}
