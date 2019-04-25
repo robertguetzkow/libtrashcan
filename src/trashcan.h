@@ -41,16 +41,17 @@
 #ifdef WIN32
 #include <stdbool.h>
 /**
- * @brief Moves a file or a directory (and its content) to the recycling bin. 
+ * @brief Moves a file or a directory (and its content) to the recycling bin.
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin.
- * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()` 
- * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library 
- * isn't loaded and has to be initialized by the code calling this function. This option is useful 
+ * @param code_page The code page to use when interpreting path as multibyte sequence.
+ * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
+ * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library
+ * isn't loaded and has to be initialized by the code calling this function. This option is useful
  * to avoid initializing the COM library multiple times.
- * @return 0 when successful, -1 otherwise.
+ * @return 0 when successful, negative otherwise.
  */
-int soft_delete_com(const char *path, bool init_com);
+int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
 
 #elif __APPLE__
 /**
@@ -70,6 +71,8 @@ int soft_delete_with_error(const char *path, NSError **error);
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
  *
+ * @warning This function expects an UTF-8 encoded string!
+ *
  * On Linux and *BSD this function implements the FreeDesktop.org trash specification v1.0.
  * @see https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html
  *
@@ -81,7 +84,10 @@ int soft_delete_with_error(const char *path, NSError **error);
  * On macOS the implementations is based on the `NSFileManager`.
  * @note If you wish to access the NSError object you should use `soft_delete_with_error()`.
  *
- * @param path Path to the file or directory that shall be moved to the trash.
+ * @warning 
+ *
+ * @param path Path to the file or directory that shall be moved to the trash. This path has 
+ * to be UTF-8 encoded or use a compatible encoding.
  * @return 0 when successful, negative otherwise.
  */
 int soft_delete(const char *path);
