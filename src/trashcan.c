@@ -545,22 +545,12 @@ error_0:
  * @param mode File permission mode to use when creating the directories.
  * @return 0 when successful, negative otherwise.
  */
-static int create_trash_dir(const char *trash_dir, const char *trash_info_dir, const char *trash_files_dir, mode_t mode)
+static int create_trash_dir(const char *trash_info_dir, const char *trash_files_dir, mode_t mode)
 {
 	int status = -1;
 
-	if (mkdir(trash_dir, mode) != 0)
-	{
-		if (errno != EEXIST) { goto error_0; }
-	}
-	if (mkdir(trash_info_dir, mode) != 0)
-	{
-		if (errno != EEXIST) { goto error_0; }
-	}
-	if (mkdir(trash_files_dir, mode) != 0)
-	{
-		if (errno != EEXIST) { goto error_0; }
-	}
+	if (mkdir_recursive(trash_info_dir, mode) < 0) { goto error_0; }
+	if (mkdir_recursive(trash_files_dir, mode) < 0) { goto error_0; }
 
 	status = 0;
 
@@ -1003,7 +993,7 @@ int soft_delete(const char *path)
 	{
 		/* File or directory is on the same devices as the home directory. The trash directory is "$XDG_DATA_HOME/Trash".
 		 * Create the directories, if they don't exist. */
-		if (create_trash_dir(trash_dir, trash_info_dir, trash_files_dir, S_IRWXU) < 0) { HANDLE_ERROR(status, LIBTRASHCAN_MKDIRHOME, error_1) }
+		if (create_trash_dir(trash_info_dir, trash_files_dir, S_IRWXU) < 0) { HANDLE_ERROR(status, LIBTRASHCAN_MKDIRHOME, error_1) }
 	}
 	else
 	{
@@ -1023,7 +1013,7 @@ int soft_delete(const char *path)
 		if (lstat(trash_dir, &trash_stat)) { case_1_failed = 1; } /* ENOENT if directory doesn't exist */
 		if (!case_1_failed && (trash_stat.st_mode & S_ISVTX) == 0) { case_1_failed = 1; } /* Make sure sticky bit is set */
 		if (!case_1_failed && S_ISLNK(trash_stat.st_mode)) { case_1_failed = 1; } /* Check if symlink */
-		if (!case_1_failed && create_trash_dir(trash_dir, trash_info_dir, trash_files_dir, S_IRWXU) < 0) { case_1_failed = 1; } /* Create (sub)directories */
+		if (!case_1_failed && create_trash_dir(trash_info_dir, trash_files_dir, S_IRWXU) < 0) { case_1_failed = 1; } /* Create (sub)directories */
 
 		if (case_1_failed)
 		{
@@ -1035,7 +1025,7 @@ int soft_delete(const char *path)
 			trash_info_dir = NULL;
 			trash_files_dir = NULL;
 			if (get_top_trash_dir(case_num, path_stat.st_dev, &trash_dir, &trash_info_dir, &trash_files_dir) < 0) { HANDLE_ERROR(status, LIBTRASHCAN_TOPDIRTRASH, error_1) }
-			if (create_trash_dir(trash_dir, trash_info_dir, trash_files_dir, S_IRWXU) < 0) { HANDLE_ERROR(status, LIBTRASHCAN_MKDIRHOME, error_1) }
+			if (create_trash_dir(trash_info_dir, trash_files_dir, S_IRWXU) < 0) { HANDLE_ERROR(status, LIBTRASHCAN_MKDIRHOME, error_1) }
 		}
 
 	}
