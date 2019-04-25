@@ -41,6 +41,7 @@
 #include "trashcan.h"
 
 #ifdef WIN32
+#include <Windows.h>
 #include <objbase.h>
 #include <shellapi.h>
 #include <shobjidl.h>
@@ -187,20 +188,20 @@ int soft_delete_com(const char *path, bool init_com)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	wchar_t *wcs = NULL;
-	size_t mbslen = 0;
-	size_t temp = 0;
 
-	/* Determine the length (mbslen includes the zero terminator) */
-	if (mbstowcs_s(&mbslen, NULL, 0, path, 0) != 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARLEN, error_0) }
+	size_t mbslen = MultiByteToWideChar(CP_OEMCP, 0, path, -1, NULL, 0);
+	if (mbslen == 0) { goto error_0; }
 
-	wcs = calloc(mbslen, sizeof(wchar_t));
-	if (wcs == NULL) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARALLOC, error_0) }
+	wcs = calloc(mbslen, sizeof(wchar_t)); /* Length includes zero termination */
 
-	/* Convert to wchar_t */
-	if (mbstowcs_s(&temp, wcs, mbslen, path, mbslen - 1) != 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_0) }
+	if (wcs == NULL) { goto error_0; }
 
-	return soft_delete_internal(wcs, init_com);
+	if (MultiByteToWideChar(CP_OEMCP, 0, path, -1, wcs, mbslen) == 0) { goto error_1; }
 
+	status = soft_delete_internal(wcs, init_com);
+
+error_1:
+	free(wcs);
 error_0:
 	return status;
 }
