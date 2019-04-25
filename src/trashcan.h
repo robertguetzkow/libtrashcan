@@ -84,8 +84,6 @@ int soft_delete_with_error(const char *path, NSError **error);
  * On macOS the implementations is based on the `NSFileManager`.
  * @note If you wish to access the NSError object you should use `soft_delete_with_error()`.
  *
- * @warning 
- *
  * @param path Path to the file or directory that shall be moved to the trash. This path has 
  * to be UTF-8 encoded or use a compatible encoding.
  * @return 0 when successful, negative otherwise.

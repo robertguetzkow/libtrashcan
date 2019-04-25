@@ -120,7 +120,7 @@ enum
  * @brief Moves a file or a directory (and its content) to the recycling bin.
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin. This needs
- * to be a wchar_t* because the Windows API requires wide characteres.
+ * to be a wchar_t* because the Windows API requires wide characters.
  * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
  * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library
  * isn't loaded and has to be initialized by the code calling this function. This option is useful
