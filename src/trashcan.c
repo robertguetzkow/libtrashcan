@@ -197,7 +197,6 @@ int soft_delete_com(const char *path, bool init_com)
 	if (wcs == NULL) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARALLOC, error_0) }
 
 	/* Convert to wchar_t */
-	//if (mbstowcs(wcs, path, mbslen + 1) == (size_t)-1) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_0) }
 	if (mbstowcs_s(&temp, wcs, mbslen, path, mbslen - 1) != 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_0) }
 
 	return soft_delete_internal(wcs, init_com);
