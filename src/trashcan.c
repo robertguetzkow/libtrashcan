@@ -189,14 +189,14 @@ int soft_delete_com(const char *path, bool init_com)
 	int status = LIBTRASHCAN_SUCCESS;
 	wchar_t *wcs = NULL;
 
-	size_t mbslen = MultiByteToWideChar(CP_OEMCP, 0, path, -1, NULL, 0);
+	size_t mbslen = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
 	if (mbslen == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARLEN, error_0) }
 
 	wcs = calloc(mbslen, sizeof(wchar_t)); /* Length includes zero termination */
 
 	if (wcs == NULL) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARALLOC, error_0) }
 
-	if (MultiByteToWideChar(CP_OEMCP, 0, path, -1, wcs, mbslen) == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_1) }
+	if (MultiByteToWideChar(CP_UTF8, 0, path, -1, wcs, mbslen) == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_1) }
 
 	status = soft_delete_internal(wcs, init_com);
 
