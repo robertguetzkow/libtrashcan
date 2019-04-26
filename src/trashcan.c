@@ -127,7 +127,7 @@ enum
  * to avoid initializing the COM library multiple times.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete_internal(const wchar_t *path, bool init_com)
+int soft_delete_core(const wchar_t *path, bool init_com)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	HRESULT hr = 0;
@@ -178,7 +178,9 @@ error_0:
  * @brief Moves a file or a directory (and its content) to the recycling bin.
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin.
- * @param code_page The code page to use when interpreting path as multibyte sequence.
+ * @param code_page The code page to use when interpreting path as multibyte sequence. Allowed values
+ * are CP_ACP, CP_MACCP, CP_OEMCP, CP_SYMBOL, CP_THREAD_ACP, CP_UTF7 and CP_UTF8.
+ * https://docs.microsoft.com/en-us/windows/desktop/api/stringapiset/nf-stringapiset-multibytetowidechar
  * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
  * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library
  * isn't loaded and has to be initialized by the code calling this function. This option is useful
@@ -199,7 +201,7 @@ int soft_delete_com(const char *path, unsigned int code_page, bool init_com)
 
 	if (MultiByteToWideChar(code_page, 0, path, -1, wcs, mbslen) == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_1) }
 
-	status = soft_delete_internal(wcs, init_com);
+	status = soft_delete_core(wcs, init_com);
 
 error_1:
 	free(wcs);
@@ -243,7 +245,7 @@ enum
  * @param error Address where pointer to NSError object shall be stored.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete_internal(NSString *path, NSError **error)
+int soft_delete_core(NSString *path, NSError **error)
 {
 	@autoreleasepool 
 	{
@@ -273,7 +275,7 @@ int soft_delete_with_error(const char *path, NSError **error)
 	{
 		NSString *file = [NSString stringWithUTF8String : path];
 
-		return soft_delete_internal(file, error);
+		return soft_delete_core(file, error);
 	}
 }
 
@@ -292,7 +294,7 @@ int soft_delete(const char *path)
 		NSString *file = [NSString stringWithUTF8String : path];
 		NSError *error = nil;
 
-		return soft_delete_internal(file, &error);
+		return soft_delete_core(file, &error);
 	}
 }
 
@@ -676,7 +678,7 @@ error_0:
 }
 
 /**
- * @brief Generates a random string of given length.
+ * @brief Generates a random string of given length. The length has to be a multiple of two.
  *
  * @param filename Address to pointer where filename shall be stored.
  * @param filename_length Length of the filename to be generated (without zero termination).

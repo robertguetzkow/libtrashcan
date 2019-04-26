@@ -40,11 +40,27 @@
 
 #ifdef WIN32
 #include <stdbool.h>
+
+ /**
+  * @brief Moves a file or a directory (and its content) to the recycling bin.
+  *
+  * @param path Path to the file or directory that shall be moved to the recycling bin. This needs
+  * to be a wchar_t* because the Windows API requires wide characters.
+  * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
+  * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library
+  * isn't loaded and has to be initialized by the code calling this function. This option is useful
+  * to avoid initializing the COM library multiple times.
+  * @return 0 when successful, negative otherwise.
+  */
+int soft_delete_core(const wchar_t *path, bool init_com);
+
 /**
  * @brief Moves a file or a directory (and its content) to the recycling bin.
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin.
- * @param code_page The code page to use when interpreting path as multibyte sequence.
+ * @param code_page The code page to use when interpreting path as multibyte sequence. Allowed values
+ * are CP_ACP, CP_MACCP, CP_OEMCP, CP_SYMBOL, CP_THREAD_ACP, CP_UTF7 and CP_UTF8.
+ * https://docs.microsoft.com/en-us/windows/desktop/api/stringapiset/nf-stringapiset-multibytetowidechar
  * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
  * and uninitializes it at the end with `CoUninitialize()`. If init_com is false the COM library
  * isn't loaded and has to be initialized by the code calling this function. This option is useful
@@ -54,6 +70,15 @@
 int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
 
 #elif __APPLE__
+ /**
+  * @brief Moves a file or a directory (and its content) to the trash.
+  *
+  * @param path Path to the file or directory that shall be moved to the trash.
+  * @param error Address where pointer to NSError object shall be stored.
+  * @return 0 when successful, negative otherwise.
+  */
+int soft_delete_core(NSString *path, NSError **error);
+
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
  *
