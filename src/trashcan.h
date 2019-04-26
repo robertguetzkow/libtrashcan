@@ -40,6 +40,7 @@
 
 #ifdef WIN32
 #include <stdbool.h>
+#include <wchar.h>
 
  /**
   * @brief Moves a file or a directory (and its content) to the recycling bin.
