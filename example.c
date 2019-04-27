@@ -32,9 +32,18 @@
 #include "src/trashcan.h"
 #include <stdio.h>
 
+#ifdef WIN32
+#include <wchar.h>
+int wmain(int argc, wchar_t **argv)
+{
+	int ret = soft_delete_core(argv[1], true);
+
+#else
 int main(int argc, char **argv)
 {
 	int ret = soft_delete(argv[1]);
+
+#endif
 
 	if (ret != 0) 
 	{ 
