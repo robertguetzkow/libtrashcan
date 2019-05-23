@@ -2,10 +2,10 @@
 libtrashcan is a cross-platform C library for soft deleting files and directories to the trashcan. 
 
 ## Supported Operating Systems
-- [x] Linux
-- [x] FreeBSD, OpenBSD, NetBSD
-- [x] Windows Vista, Windows Server 2008 and newer
-- [ ] MacOS
+- [x] ![Linux Build Status](https://api.cirrus-ci.com/github/robertguetzkow/libtrashcan.svg?task=Linux) Linux
+- [x] ![BSD Build Status](https://api.cirrus-ci.com/github/robertguetzkow/libtrashcan.svg?task=BSD) FreeBSD, OpenBSD, NetBSD
+- [x] ![Windows Build Status](https://api.cirrus-ci.com/github/robertguetzkow/libtrashcan.svg?task=Windows) Windows Vista, Windows Server 2008 and newer
+- [ ] ![macOS Build Status](https://api.cirrus-ci.com/github/robertguetzkow/libtrashcan.svg?task=macOS) macOS
 
 ## Why is this useful?
 When you're implementing user interaction for viewing, selecting, loading and creating files you may also want to offer the functionality to delete files. Using POSIX specified functions for cross-platform development may seem sensible, however `remove()` and `rmdir()` happen to permanently delete files and directories. This is likely not the behavior a user of your program would anticipate even more so if there aren't any warnings. In order to ease development of cross-platform C applications this library implements the soft delete functionality for you. It also helps with operating systems where the C interface isn't well documented, like for instance with Windows' `IFileOperation` interface.

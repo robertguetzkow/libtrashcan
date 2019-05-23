@@ -1,0 +1,28 @@
+BSD_task:
+  freebsd_instance:
+    image: freebsd-12-0-release-amd64
+  prepare_script: pkg install -y cmake && mkdir build
+  configure_script: cd ./build && cmake ..
+  build_script: cmake --build ./build --config Release
+
+macOS_task:
+  osx_instance:
+    image: mojave-xcode-10.2
+  prepare_script: brew install cmake && mkdir build
+  configure_script: cd ./build && cmake ..
+  build_script: cmake --build ./build --config Release
+
+Linux_task:
+  container:
+    image: ubuntu:latest
+  prepare_script: apt update && apt install -y build-essential && apt install -y cmake && mkdir build 
+  configure_script: cd ./build && cmake ..
+  build_script: cmake --build ./build --config Release
+
+Windows_task:
+  windows_container:
+    image: cirrusci/windowsservercore:cmake
+    os_version: 2019
+  prepare_script: mkdir build
+  configure_script: cd ./build && cmake -G "Visual Studio 15 2017 Win64" ..
+  build_script: cmake --build ./build --config Release
