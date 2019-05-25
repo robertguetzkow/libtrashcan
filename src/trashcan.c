@@ -48,6 +48,11 @@
 #include <versionhelpers.h>
 #include <stdbool.h>
 
+#elif __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#include <objc/runtime.h>
+#include <objc/message.h>
+
 #elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__
 #ifdef __linux__
 #define _GNU_SOURCE
@@ -231,7 +236,7 @@ int soft_delete(const char *path)
 #elif __APPLE__
 #define STATUS_CODES(X) \
 	X(0, LIBTRASHCAN_SUCCESS, "Successful.")\
-	X(-1, LIBTRASHCAN_ERROR, "Error occurred. Use soft_delete_with_error() to retrieve NSError object.")\
+	X(-1, LIBTRASHCAN_ERROR, "Error occurred.")\
 
 enum
 {
@@ -239,63 +244,47 @@ enum
 };
 
 /**
- * @brief Moves a file or a directory (and its content) to the trash. 
- *
- * @param path Path to the file or directory that shall be moved to the trash.
- * @param error Address where pointer to NSError object shall be stored.
- * @return 0 when successful, negative otherwise.
- */
-int soft_delete_core(NSString *path, NSError **error)
-{
-	@autoreleasepool 
-	{
-		NSFileManager *fm = [NSFileManager defaultManager];
-		NSURL *url = [NSURL fileURLWithPath:path];
-		NSURL *trash_url = nil;
-
-		if (![fm trashItemAtURL:url resultingItemURL:&trash_url error:error])
-		{
-			return LIBTRASHCAN_ERROR;
-		}
-
-		return LIBTRASHCAN_SUCCESS;
-	}
-}
-
-/**
  * @brief Moves a file or a directory (and its content) to the trash.
- *
- * @param path Path to the file or directory that shall be moved to the trash.
- * @param error Address where pointer to NSError object shall be stored.
- * @return 0 when successful, negative otherwise.
- */
-int soft_delete_with_error(const char *path, NSError **error)
-{
-	@autoreleasepool
-	{
-		NSString *file = [NSString stringWithUTF8String : path];
-
-		return soft_delete_core(file, error);
-	}
-}
-
-/**
- * @brief Moves a file or a directory (and its content) to the trash.
- *
- * @note If you wish to access the NSError object you should use `soft_delete_with_error()`.
  *
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, negative otherwise.
  */
 int soft_delete(const char *path)
 {
-	@autoreleasepool
-	{
-		NSString *file = [NSString stringWithUTF8String : path];
-		NSError *error = nil;
+	int ret = LIBTRASHCAN_ERROR;
 
-		return soft_delete_core(file, &error);
+	Class NSAutoreleasePoolClass = objc_getClass("NSAutoreleasePool");
+	SEL allocSel = sel_registerName("alloc");
+	SEL initSel = sel_registerName("init");
+	id poolAlloc = ((id(*)(Class, SEL))objc_msgSend)(NSAutoreleasePoolClass, allocSel);
+	id pool = ((id(*)(id, SEL))objc_msgSend)(poolAlloc, initSel);
+
+	Class NSStringClass = objc_getClass("NSString");
+	SEL stringWithUTF8StringSel = sel_registerName("stringWithUTF8String:");
+	id pathString = ((id(*)(Class, SEL, const char*))objc_msgSend)(NSStringClass, stringWithUTF8StringSel, path);
+
+	Class NSFileManagerClass = objc_getClass("NSFileManager");
+	SEL defaultManagerSel = sel_registerName("defaultManager");
+	id fileManager = ((id(*)(Class, SEL))objc_msgSend)(NSFileManagerClass, defaultManagerSel);
+
+	Class NSURLClass = objc_getClass("NSURL");
+	SEL fileURLWithPathSel = sel_registerName("fileURLWithPath:");
+	id nsurl = ((id(*)(Class, SEL, id))objc_msgSend)(NSURLClass, fileURLWithPathSel, pathString);
+
+	id nsurlString = objc_msgSend(nsurl, sel_registerName("absoluteString"));
+
+	SEL trashItemAtURLSel = sel_registerName("trashItemAtURL:resultingItemURL:error:");
+	BOOL deleteSuccessful = ((BOOL(*)(id, SEL, id, id, id))objc_msgSend)(fileManager, trashItemAtURLSel, nsurl, nil, nil);
+
+	if (deleteSuccessful)
+	{
+		ret = LIBTRASHCAN_SUCCESS;
 	}
+
+	SEL drainSel = sel_registerName("drain");
+	((void(*)(id, SEL))objc_msgSend)(pool, drainSel);
+
+	return ret;
 }
 
 #elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__

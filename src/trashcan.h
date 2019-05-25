@@ -71,24 +71,6 @@ int soft_delete_core(const wchar_t *path, bool init_com);
 int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
 
 #elif __APPLE__
- /**
-  * @brief Moves a file or a directory (and its content) to the trash.
-  *
-  * @param path Path to the file or directory that shall be moved to the trash.
-  * @param error Address where pointer to NSError object shall be stored.
-  * @return 0 when successful, negative otherwise.
-  */
-int soft_delete_core(NSString *path, NSError **error);
-
-/**
- * @brief Moves a file or a directory (and its content) to the trash.
- *
- * @param path Path to the file or directory that shall be moved to the trash.
- * @param error Address where pointer to NSError object shall be stored.
- * @return 0 when successful, negative otherwise.
- */
-int soft_delete_with_error(const char *path, NSError **error);
-
 #elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__
 #else
 #error Platform not supported
