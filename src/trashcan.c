@@ -24,7 +24,7 @@
 /**
  * @file trashcan.c
  * @author Robert Guetzkow
- * @version 0.3.1-alpha
+ * @version 0.3.2-alpha
  * @date 2019-04-18
  * @brief libtrashcan - A library for putting a file or directory in the trashcan.
  *
@@ -96,15 +96,17 @@
 
 #define STATUS_CODES(X) \
 	X(0, LIBTRASHCAN_SUCCESS, "Successful.")\
-	X(-1, LIBTRASHCAN_COMINIT, "Failed to initialize COM.")\
-	X(-2, LIBTRASHCAN_INSTANCE, "Failed to create FileOperation instance.")\
-	X(-3, LIBTRASHCAN_FLAGS, "Failed to set operation flags.")\
-	X(-4, LIBTRASHCAN_PARSE, "Failed to parse path.")\
-	X(-5, LIBTRASHCAN_SETOP, "Failed to prepare delete operation.")\
-	X(-6, LIBTRASHCAN_EXECOP, "Failed to delete file or directory.")\
-	X(-7, LIBTRASHCAN_WCHARLEN, "Failed to retrieve wchar_t length.")\
-	X(-8, LIBTRASHCAN_WCHARALLOC, "Failed to allocated *wchar_t.")\
-	X(-9, LIBTRASHCAN_WCHARCONV, "Failed to convert *char to *wchar_t.")\
+	X(-1, LIBTRASHCAN_ALLOC, "Failed to allocate memory for full path.")\
+	X(-2, LIBTRASHCAN_FULLPATH, "Failed to get full path.")\
+	X(-3, LIBTRASHCAN_COMINIT, "Failed to initialize COM.")\
+	X(-4, LIBTRASHCAN_INSTANCE, "Failed to create FileOperation instance.")\
+	X(-5, LIBTRASHCAN_FLAGS, "Failed to set operation flags.")\
+	X(-6, LIBTRASHCAN_PARSE, "Failed to parse path.")\
+	X(-7, LIBTRASHCAN_SETOP, "Failed to prepare delete operation.")\
+	X(-8, LIBTRASHCAN_EXECOP, "Failed to delete file or directory.")\
+	X(-9, LIBTRASHCAN_WCHARLEN, "Failed to retrieve wchar_t length.")\
+	X(-10, LIBTRASHCAN_WCHARALLOC, "Failed to allocated *wchar_t.")\
+	X(-11, LIBTRASHCAN_WCHARCONV, "Failed to convert *char to *wchar_t.")\
 
 
 enum
@@ -124,6 +126,8 @@ enum
 /**
  * @brief Moves a file or a directory (and its content) to the recycling bin.
  *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
+ *
  * @param path Path to the file or directory that shall be moved to the recycling bin. This needs
  * to be a wchar_t* because the Windows API requires wide characters.
  * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
@@ -139,15 +143,22 @@ int soft_delete_core(const wchar_t *path, bool init_com)
 	IFileOperation *pfo;
 	IShellItem *pSI;
 
+	ULONG len = GetFullPathNameW(path, 0, NULL, NULL); /* Retrieve the size of the full path */
+
+	wchar_t *full_path = malloc(len * sizeof(wchar_t));
+	if (full_path == NULL) { HANDLE_ERROR(status, LIBTRASHCAN_ALLOC, error_0) }
+
+	if (!GetFullPathNameW(path, len, full_path, NULL)) { HANDLE_ERROR(status, LIBTRASHCAN_FULLPATH, error_1) }
+
 	if (init_com)
 	{
 		hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	}
 
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_COMINIT, error_0) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_COMINIT, error_1) }
 
 	hr = CoCreateInstance(&CLSID_FileOperation, NULL, CLSCTX_ALL, &IID_IFileOperation, (void**)&pfo);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_INSTANCE, error_1) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_INSTANCE, error_2) }
 
 	if (IsWindows8OrGreater())
 	{
@@ -158,29 +169,33 @@ int soft_delete_core(const wchar_t *path, bool init_com)
 		hr = pfo->lpVtbl->SetOperationFlags(pfo, FOF_ALLOWUNDO | FOF_SILENT | FOF_NOERRORUI | FOFX_EARLYFAILURE);
 	}
 
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_FLAGS, error_1) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_FLAGS, error_2) }
 
-	hr = SHCreateItemFromParsingName(path, NULL, &IID_IShellItem, (void**)&pSI);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_PARSE, error_1) }
+	hr = SHCreateItemFromParsingName(full_path, NULL, &IID_IShellItem, (void**)&pSI);
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_PARSE, error_2) }
 
 	hr = pfo->lpVtbl->DeleteItem(pfo, pSI, NULL);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_1) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_2) }
 
 	hr = pfo->lpVtbl->PerformOperations(pfo);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_1) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_2) }
 
-error_1:
+error_2:
 	pfo->lpVtbl->Release(pfo);
 	if (init_com)
 	{
 		CoUninitialize(); /* Has to be uninitialized when CoInitializeEx returns either S_OK or S_FALSE */
 	}
+error_1:
+	free(full_path);
 error_0:
 	return status;
 }
 
 /**
  * @brief Moves a file or a directory (and its content) to the recycling bin.
+ *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin.
  * @param code_page The code page to use when interpreting path as multibyte sequence. Allowed values
@@ -217,6 +232,8 @@ error_0:
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
  *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
+ *
  * @warning This function expects an UTF-8 encoded string! If you want to set a Windows code page
  * use `soft_delete_com()` instead.
  *
@@ -245,6 +262,8 @@ enum
 
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
+ *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, negative otherwise.
@@ -952,6 +971,8 @@ error_0:
 
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
+ *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, -1 otherwise.

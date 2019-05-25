@@ -24,7 +24,7 @@
 /**
  * @file trashcan.h
  * @author Robert Guetzkow
- * @version 0.3.1-alpha
+ * @version 0.3.2-alpha
  * @date 2019-04-18
  * @brief Header file defining libtrashcan's API
  *
@@ -45,6 +45,8 @@
  /**
   * @brief Moves a file or a directory (and its content) to the recycling bin.
   *
+  * @warning Do not change the current working directory when using this in a multithreaded application!
+  *
   * @param path Path to the file or directory that shall be moved to the recycling bin. This needs
   * to be a wchar_t* because the Windows API requires wide characters.
   * @param init_com If true, initializes the COM library at the beginning using `CoUninitialize()`
@@ -57,6 +59,8 @@ int soft_delete_core(const wchar_t *path, bool init_com);
 
 /**
  * @brief Moves a file or a directory (and its content) to the recycling bin.
+ *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @param path Path to the file or directory that shall be moved to the recycling bin.
  * @param code_page The code page to use when interpreting path as multibyte sequence. Allowed values
@@ -78,6 +82,8 @@ int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
 
 /**
  * @brief Moves a file or a directory (and its content) to the trash.
+ *
+ * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @warning This function expects an UTF-8 encoded string!
  *
