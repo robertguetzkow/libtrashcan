@@ -24,7 +24,7 @@
 /**
  * @file trashcan.c
  * @author Robert Guetzkow
- * @version 0.1-alpha
+ * @version 0.3.1-alpha
  * @date 2019-04-18
  * @brief libtrashcan - A library for putting a file or directory in the trashcan.
  *
@@ -270,8 +270,6 @@ int soft_delete(const char *path)
 	Class NSURLClass = objc_getClass("NSURL");
 	SEL fileURLWithPathSel = sel_registerName("fileURLWithPath:");
 	id nsurl = ((id(*)(Class, SEL, id))objc_msgSend)(NSURLClass, fileURLWithPathSel, pathString);
-
-	id nsurlString = objc_msgSend(nsurl, sel_registerName("absoluteString"));
 
 	SEL trashItemAtURLSel = sel_registerName("trashItemAtURL:resultingItemURL:error:");
 	BOOL deleteSuccessful = ((BOOL(*)(id, SEL, id, id, id))objc_msgSend)(fileManager, trashItemAtURLSel, nsurl, nil, nil);
