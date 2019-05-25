@@ -24,7 +24,7 @@
 /**
  * @file trashcan.c
  * @author Robert Guetzkow
- * @version 0.3.2-alpha
+ * @version 0.3.3-alpha
  * @date 2019-04-18
  * @brief libtrashcan - A library for putting a file or directory in the trashcan.
  *
@@ -143,12 +143,12 @@ int soft_delete_core(const wchar_t *path, bool init_com)
 	IFileOperation *pfo;
 	IShellItem *pSI;
 
-	ULONG len = GetFullPathNameW(path, 0, NULL, NULL); /* Retrieve the size of the full path */
+	ULONG full_path_len = GetFullPathNameW(path, 0, NULL, NULL); /* Retrieve the size of the full path */
 
-	wchar_t *full_path = malloc(len * sizeof(wchar_t));
+	wchar_t *full_path = malloc(full_path_len * sizeof(wchar_t));
 	if (full_path == NULL) { HANDLE_ERROR(status, LIBTRASHCAN_ALLOC, error_0) }
 
-	if (!GetFullPathNameW(path, len, full_path, NULL)) { HANDLE_ERROR(status, LIBTRASHCAN_FULLPATH, error_1) }
+	if (full_path_len - 1 != GetFullPathNameW(path, full_path_len, full_path, NULL)) { HANDLE_ERROR(status, LIBTRASHCAN_FULLPATH, error_1) }
 
 	if (init_com)
 	{

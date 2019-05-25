@@ -24,7 +24,7 @@
 /**
  * @file trashcan.h
  * @author Robert Guetzkow
- * @version 0.3.2-alpha
+ * @version 0.3.3-alpha
  * @date 2019-04-18
  * @brief Header file defining libtrashcan's API
  *
@@ -96,7 +96,6 @@ int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
  * `init_com` set to `false`.
  *
  * On macOS the implementations is based on the `NSFileManager`.
- * @note If you wish to access the NSError object you should use `soft_delete_with_error()`.
  *
  * @param path Path to the file or directory that shall be moved to the trash. This path has 
  * to be UTF-8 encoded or use a compatible encoding.
