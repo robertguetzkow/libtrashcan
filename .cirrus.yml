@@ -3,21 +3,24 @@ BSD_task:
     image: freebsd-12-0-release-amd64
   prepare_script: pkg install -y cmake && mkdir build
   configure_script: cd ./build && cmake ..
-  build_script: cmake --build ./build --config Release
+  build_script: cmake --build ./build --config Debug
+  test_script: echo "Wenn ist das Nunstueck git und Slotermeyer? Ja! Beiherhund das Oder die Flipperwaldt gersput!" > test.txt && ./build/example $CIRRUS_WORKING_DIR/test.txt
 
 macOS_task:
   osx_instance:
     image: mojave-xcode-10.2
   prepare_script: brew install cmake && mkdir build
   configure_script: cd ./build && cmake ..
-  build_script: cmake --build ./build --config Release
+  build_script: cmake --build ./build --config Debug
+  test_script: echo "Wenn ist das Nunstueck git und Slotermeyer? Ja! Beiherhund das Oder die Flipperwaldt gersput!" > test.txt && ./build/example $CIRRUS_WORKING_DIR/test.txt
 
 Linux_task:
   container:
     image: ubuntu:latest
   prepare_script: apt update && apt install -y build-essential && apt install -y cmake && mkdir build 
   configure_script: cd ./build && cmake ..
-  build_script: cmake --build ./build --config Release
+  build_script: cmake --build ./build --config Debug
+  test_script: echo "Wenn ist das Nunstueck git und Slotermeyer? Ja! Beiherhund das Oder die Flipperwaldt gersput!" > test.txt && ./build/example $CIRRUS_WORKING_DIR/test.txt
 
 Windows_task:
   windows_container:
@@ -25,4 +28,5 @@ Windows_task:
     os_version: 2019
   prepare_script: mkdir build
   configure_script: cd ./build && cmake -G "Visual Studio 15 2017 Win64" ..
-  build_script: cmake --build ./build --config Release
+  build_script: cmake --build ./build --config Debug
+  test_script: echo "Wenn ist das Nunstueck git und Slotermeyer? Ja! Beiherhund das Oder die Flipperwaldt gersput!" > test.txt && %CIRRUS_WORKING_DIR%/build/Debug/example.exe %CIRRUS_WORKING_DIR%/test.txt
