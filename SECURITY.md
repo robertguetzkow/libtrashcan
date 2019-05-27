@@ -2,12 +2,11 @@
 
 ## Reporting a Vulnerability
 
-If you found a vulnerability and would like to perform a responsible disclosure, please contact me.
+If you found a vulnerability and would like to perform a responsible disclosure, please contact me. [rguetzkow/+@+\outlook.de] (remove the brackets, pluses, slash and backslash)
 
-[rguetzkow/+@+\outlook.de] (remove the brackets, pluses, slash and backslash)
+Fingerprint: `92A0 887F 1458 21E9 A886 056B 41E6 9E72 82EC 9984`
 
-Fingerprint: 92A0 887F 1458 21E9 A886 056B 41E6 9E72 82EC 9984
-
+```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mDMEXAbl5xYJKwYBBAHaRw8BAQdALoWqG/fAPg/LuEve7p1hZNtoRdehgOUS8lLO
@@ -24,3 +23,4 @@ SpYBAJWcrf672zKwSOAhmpSANOUGCeGflGU6grPsEIKTLescAQCYSKNXdCp61h7z
 g2rjParL2iMFtJ9PyKS763lfYGIDDQ==
 =KGef
 -----END PGP PUBLIC KEY BLOCK-----
+```
