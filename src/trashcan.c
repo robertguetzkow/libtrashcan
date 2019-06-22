@@ -896,20 +896,20 @@ static int create_or_update_dir_size_cache(const char *trash_dir, const char *tr
 	char *current_trashinfo = NULL;
 	char *current_line = NULL;
 
-	if (generate_random_filename(&temp_name, _POSIX_NAME_MAX) < 0) { goto error_1; }
-	if (asprintf(&dir_size_cache, "%s/%s", trash_dir, "directorysizes") < 0) { HANDLE_ERROR(dir_size_cache, NULL, error_1) }
-	if (asprintf(&dir_size_cache_temp, "%s/%s", trash_dir, temp_name) < 0) { HANDLE_ERROR(dir_size_cache_temp, NULL, error_1) }
+	if (generate_random_filename(&temp_name, _POSIX_NAME_MAX) < 0) { goto error_0; }
+	if (asprintf(&dir_size_cache, "%s/%s", trash_dir, "directorysizes") < 0) { HANDLE_ERROR(dir_size_cache, NULL, error_0) }
+	if (asprintf(&dir_size_cache_temp, "%s/%s", trash_dir, temp_name) < 0) { HANDLE_ERROR(dir_size_cache_temp, NULL, error_0) }
 
 	FILE *fptr = fopen(dir_size_cache_temp, "w");
 	if (fptr == NULL)
 	{
-		goto error_1;
+		goto error_0;
 	}
 
 	struct dirent *directory_entry;
 	struct stat trashinfo_stat;
 	DIR *directory = opendir(trash_files_dir);
-	if (directory == NULL) { goto error_2; }
+	if (directory == NULL) { goto error_1; }
 
 	while ((directory_entry = readdir(directory)) != NULL)
 	{
@@ -921,15 +921,15 @@ static int create_or_update_dir_size_cache(const char *trash_dir, const char *tr
 		if (directory_entry->d_type == DT_DIR)
 		{
 			uint64_t dir_size = 0;
-			if (asprintf(&current_dir, "%s/%s", trash_files_dir, directory_entry->d_name) < 0) { HANDLE_ERROR(current_dir, NULL, error_3) }
-			if (get_dir_size(current_dir, &dir_size) < 0) { goto error_3; }
-			if (asprintf(&current_trashinfo, "%s/%s%s", trash_info_dir, directory_entry->d_name, ".trashinfo") < 0) { HANDLE_ERROR(current_trashinfo, NULL, error_3) }
+			if (asprintf(&current_dir, "%s/%s", trash_files_dir, directory_entry->d_name) < 0) { HANDLE_ERROR(current_dir, NULL, error_2) }
+			if (get_dir_size(current_dir, &dir_size) < 0) { goto error_2; }
+			if (asprintf(&current_trashinfo, "%s/%s%s", trash_info_dir, directory_entry->d_name, ".trashinfo") < 0) { HANDLE_ERROR(current_trashinfo, NULL, error_2) }
 			if (lstat(current_trashinfo, &trashinfo_stat)) { goto skip; } /* lstat can fail if .trashinfo file doesn't exist. */
-			if (asprintf(&current_line, "%" PRIu64 " %jd %s\n", dir_size, (intmax_t)trashinfo_stat.st_mtime, directory_entry->d_name) < 0) { HANDLE_ERROR(current_line, NULL, error_3) }
+			if (asprintf(&current_line, "%" PRIu64 " %jd %s\n", dir_size, (intmax_t)trashinfo_stat.st_mtime, directory_entry->d_name) < 0) { HANDLE_ERROR(current_line, NULL, error_2) }
 
 			if (fwrite(current_line, sizeof(char), strlen(current_line), fptr) != strlen(current_line))
 			{
-				goto error_3;
+				goto error_2;
 			}
 
 skip:
@@ -948,24 +948,23 @@ skip:
 	if (rename(dir_size_cache_temp, dir_size_cache) != 0)
 	{
 		remove(dir_size_cache_temp);
-		goto error_1;
+		goto error_0;
 	}
 
 	status = 0;
 
-	goto error_1;
+	goto error_0;
 
-error_3:
-	closedir(directory);
 error_2:
-	fclose(fptr);
+	closedir(directory);
 error_1:
+	fclose(fptr);
+error_0:
 	free(current_line);
 	free(current_trashinfo);
 	free(dir_size_cache_temp);
 	free(dir_size_cache);
 	free(temp_name);
-error_0:
 	return status;
 }
 
@@ -1013,7 +1012,6 @@ int soft_delete(const char *path)
 		/* If possible apply case (1) or (2) of the specification */
 		unsigned char case_1_failed = 0;
 		unsigned char case_num = 1;
-		struct stat mount_stat;
 
 		free(trash_dir);
 		free(trash_info_dir);
