@@ -354,6 +354,9 @@ static int get_home_trash_dir(char **data_home, char **trash_dir, char **trash_i
 		const char *home = getenv("HOME");
 		if (home == NULL) { goto error_0; }
 
+		/* If root dir, then don't include in concatenated path because otherwise there would be two leading slashes. */
+		if (strcmp(home, "/") == 0) { home = ""; }
+
 		if (asprintf(data_home, "%s%s", home, "/.local/share") < 0) { HANDLE_ERROR(*data_home, NULL, error_m1) }
 		if (asprintf(trash_dir, "%s%s", home, "/.local/share/Trash") < 0) { HANDLE_ERROR(*trash_dir, NULL, error_m1) }
 		if (asprintf(trash_info_dir, "%s%s", *trash_dir, "/info") < 0) { HANDLE_ERROR(*trash_info_dir, NULL, error_m1) }
@@ -361,6 +364,9 @@ static int get_home_trash_dir(char **data_home, char **trash_dir, char **trash_i
 	}
 	else
 	{
+		/* If root dir, then don't include in concatenated path because otherwise there would be two leading slashes. */
+		if (strcmp(xdg_data_home, "/") == 0) { xdg_data_home = ""; }
+
 		if (asprintf(data_home, "%s", xdg_data_home) < 0) { HANDLE_ERROR(*data_home, NULL, error_m1) }
 		if (asprintf(trash_dir, "%s%s", xdg_data_home, "/Trash") < 0) { HANDLE_ERROR(*trash_dir, NULL, error_m1) }
 		if (asprintf(trash_info_dir, "%s%s", *trash_dir, "/info") < 0) { HANDLE_ERROR(*trash_info_dir, NULL, error_m1) }
