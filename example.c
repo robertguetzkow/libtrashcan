@@ -36,18 +36,18 @@
 #include <wchar.h>
 int wmain(int argc, wchar_t **argv)
 {
-	int ret = soft_delete_core(argv[1], true);
+	int ret = trashcan_soft_delete_core(argv[1], true);
 
 #else
 int main(int argc, char **argv)
 {
-	int ret = soft_delete(argv[1]);
+	int ret = trashcan_soft_delete(argv[1]);
 
 #endif
 
 	if (ret != 0) 
 	{ 
-		const char *msg = status_msg(ret);
+		const char *msg = trashcan_status_msg(ret);
 		printf("%s\n", msg);
 	}
 

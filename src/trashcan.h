@@ -55,7 +55,7 @@
   * to avoid initializing the COM library multiple times.
   * @return 0 when successful, negative otherwise.
   */
-int soft_delete_core(const wchar_t *path, bool init_com);
+int trashcan_soft_delete_core(const wchar_t *path, bool init_com);
 
 /**
  * @brief Moves a file or a directory (and its content) to the recycling bin.
@@ -72,10 +72,10 @@ int soft_delete_core(const wchar_t *path, bool init_com);
  * to avoid initializing the COM library multiple times.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
+int trashcan_soft_delete_com(const char *path, unsigned int code_page, bool init_com);
 
-#elif __APPLE__
-#elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__
+#elif defined(__APPLE__)
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #else
 #error Platform not supported
 #endif
@@ -101,7 +101,7 @@ int soft_delete_com(const char *path, unsigned int code_page, bool init_com);
  * to be UTF-8 encoded or use a compatible encoding.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete(const char *path);
+int trashcan_soft_delete(const char *path);
 
 /**
  * @brief Returns a textual representation of the status code.
@@ -109,6 +109,6 @@ int soft_delete(const char *path);
  * @param error_code The return value of an API function
  * @return String literal that contains the status message
  */
-const char* status_msg(int status_code);
+const char* trashcan_status_msg(int status_code);
 
 #endif

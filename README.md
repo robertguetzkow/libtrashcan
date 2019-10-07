@@ -16,9 +16,9 @@ When you're implementing user interaction for viewing, selecting, loading and cr
 For Linux and *BSD the library implements the [FreeDesktop.org trash specification v1.0](https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html). On Windows our implementation uses the `IFileOperation` interface and also handles COM initialization. MacOS already has a simple way to trash files using the `NSFileManager` which is wrapped in a function as well. 
 
 ## API
-The function `int soft_delete(const char *path)` is provided on all platforms. It takes a path to a file or directory, tries to move it to the trashcan and returns a status code. Additional platform dependent functions with different signatures may be provided, e.g. to control COM initialization on Windows. The complete API is documented in the [trashcan.h](src/trashcan.h) file. For an example application that uses libtrashcan take a look at [example.c](example.c).
+The function `int trashcan_soft_delete(const char *path)` is provided on all platforms. It takes a path to a file or directory, tries to move it to the trashcan and returns a status code. Additional platform dependent functions with different signatures may be provided, e.g. to control COM initialization on Windows. The complete API is documented in the [trashcan.h](src/trashcan.h) file. For an example application that uses libtrashcan take a look at [example.c](example.c).
 
-All functions for soft deletion return a status code which can be converted into a status message using `const char* status_msg(int status_code)`. Any status code other than zero means that an error occured.
+All functions for soft deletion return a status code which can be converted into a status message using `const char* trashcan_status_msg(int status_code)`. Any status code other than zero means that an error occured.
 
 ## Compilation
 In order to use libtrashcan you need to include `trashcan.h` in your source code, build and link the library. An example projects is provided that shows how to do that using CMake. Using CMake is *not a requirement* for your project you can use any build tools you prefer. 

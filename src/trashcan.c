@@ -48,12 +48,12 @@
 #include <versionhelpers.h>
 #include <stdbool.h>
 
-#elif __APPLE__
+#elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <objc/runtime.h>
 #include <objc/message.h>
 
-#elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #ifdef __linux__
 #define _GNU_SOURCE
 #include <mntent.h>
@@ -136,7 +136,7 @@ enum
  * to avoid initializing the COM library multiple times.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete_core(const wchar_t *path, bool init_com)
+int trashcan_soft_delete_core(const wchar_t *path, bool init_com)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	HRESULT hr = 0;
@@ -207,7 +207,7 @@ error_0:
  * to avoid initializing the COM library multiple times.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete_com(const char *path, unsigned int code_page, bool init_com)
+int trashcan_soft_delete_com(const char *path, unsigned int code_page, bool init_com)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	wchar_t *wcs = NULL;
@@ -221,7 +221,7 @@ int soft_delete_com(const char *path, unsigned int code_page, bool init_com)
 
 	if (MultiByteToWideChar(code_page, 0, path, -1, wcs, mbslen) == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARCONV, error_1) }
 
-	status = soft_delete_core(wcs, init_com);
+	status = trashcan_soft_delete_core(wcs, init_com);
 
 error_1:
 	free(wcs);
@@ -235,22 +235,22 @@ error_0:
  * @warning Do not change the current working directory when using this in a multithreaded application!
  *
  * @warning This function expects an UTF-8 encoded string! If you want to set a Windows code page
- * use `soft_delete_com()` instead.
+ * use `trashcan_soft_delete_com()` instead.
  *
  * @note The COM library is initialized and uninitialized during this function call. If your
- * application already loads the COM library you should use `soft_delete_com()` with
+ * application already loads the COM library you should use `trashcan_soft_delete_com()` with
  * `init_com` set to `false`.
  *
  * @param path Path to the file or directory that shall be moved to the trash. This path has
  * to be UTF-8 encoded or use a compatible encoding.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete(const char *path)
+trashcan_soft_delete(const char *path)
 {
-	return soft_delete_com(path, CP_UTF8, true);
+	return trashcan_soft_delete_com(path, CP_UTF8, true);
 }
 
-#elif __APPLE__
+#elif defined(__APPLE__)
 #define STATUS_CODES(X) \
 	X(0, LIBTRASHCAN_SUCCESS, "Successful.")\
 	X(-1, LIBTRASHCAN_ERROR, "Error occurred.")\
@@ -268,7 +268,7 @@ enum
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, negative otherwise.
  */
-int soft_delete(const char *path)
+trashcan_soft_delete(const char *path)
 {
 	int ret = LIBTRASHCAN_ERROR;
 
@@ -304,7 +304,7 @@ int soft_delete(const char *path)
 	return ret;
 }
 
-#elif __linux__ || __FreeBSD__ || __NetBSD__ || __OpenBSD__
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 
 #define STATUS_CODES(X) \
 	X(0, LIBTRASHCAN_SUCCESS, "Successful.")\
@@ -982,7 +982,7 @@ error_0:
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, -1 otherwise.
  */
-int soft_delete(const char *path)
+trashcan_soft_delete(const char *path)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	char *resolved_path = NULL;
@@ -1129,7 +1129,7 @@ error_0:
  * @param error_code The return value of an API function
  * @return String literal that contains the status message
  */
-const char* status_msg(int status_code)
+const char* trashcan_status_msg(int status_code)
 {
 	switch (status_code)
 	{
