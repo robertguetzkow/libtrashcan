@@ -245,7 +245,7 @@ error_0:
  * to be UTF-8 encoded or use a compatible encoding.
  * @return 0 when successful, negative otherwise.
  */
-trashcan_soft_delete(const char *path)
+int trashcan_soft_delete(const char *path)
 {
 	return trashcan_soft_delete_com(path, CP_UTF8, true);
 }
@@ -268,7 +268,7 @@ enum
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, negative otherwise.
  */
-trashcan_soft_delete(const char *path)
+int trashcan_soft_delete(const char *path)
 {
 	int ret = LIBTRASHCAN_ERROR;
 
@@ -982,7 +982,7 @@ error_0:
  * @param path Path to the file or directory that shall be moved to the trash.
  * @return 0 when successful, -1 otherwise.
  */
-trashcan_soft_delete(const char *path)
+int trashcan_soft_delete(const char *path)
 {
 	int status = LIBTRASHCAN_SUCCESS;
 	char *resolved_path = NULL;
