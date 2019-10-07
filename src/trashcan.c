@@ -212,7 +212,7 @@ int trashcan_soft_delete_com(const char *path, unsigned int code_page, bool init
 	int status = LIBTRASHCAN_SUCCESS;
 	wchar_t *wcs = NULL;
 
-	size_t mbslen = MultiByteToWideChar(code_page, 0, path, -1, NULL, 0);
+	int mbslen = MultiByteToWideChar(code_page, 0, path, -1, NULL, 0);
 	if (mbslen == 0) { HANDLE_ERROR(status, LIBTRASHCAN_WCHARLEN, error_0) }
 
 	wcs = calloc(mbslen, sizeof(wchar_t)); /* Length includes zero termination */
