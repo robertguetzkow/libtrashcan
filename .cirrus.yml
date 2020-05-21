@@ -1,6 +1,6 @@
 BSD_task:
   freebsd_instance:
-    image: freebsd-12-0-release-amd64
+    image: freebsd-13-0-snap
   prepare_script: pkg install -y cmake && mkdir build
   configure_script: cd ./build && cmake ..
   build_script: cmake --build ./build --config Debug
@@ -8,7 +8,7 @@ BSD_task:
 
 macOS_task:
   osx_instance:
-    image: mojave-xcode-10.2
+    image: catalina-xcode
   prepare_script: brew install cmake && mkdir build
   configure_script: cd ./build && cmake ..
   build_script: cmake --build ./build --config Debug
