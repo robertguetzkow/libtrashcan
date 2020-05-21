@@ -17,7 +17,7 @@ macOS_task:
 Linux_task:
   container:
     image: ubuntu:latest
-  prepare_script: apt update && apt install -y build-essential && apt install -y cmake && mkdir build 
+  prepare_script: export DEBIAN_FRONTEND=noninteractive && apt update && apt install -y build-essential && apt install -y cmake && mkdir build 
   configure_script: cd ./build && cmake ..
   build_script: cmake --build ./build --config Debug
   test_script: echo "Wenn ist das Nunstueck git und Slotermeyer? Ja! Beiherhund das Oder die Flipperwaldt gersput!" > test.txt && ./build/example $CIRRUS_WORKING_DIR/test.txt
