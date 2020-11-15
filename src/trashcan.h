@@ -38,6 +38,10 @@
 #ifndef TRASHCAN_H
 #define TRASHCAN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef WIN32
 #include <stdbool.h>
 #include <wchar.h>
@@ -110,5 +114,9 @@ int trashcan_soft_delete(const char *path);
  * @return String literal that contains the status message
  */
 const char* trashcan_status_msg(int status_code);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
