@@ -175,10 +175,13 @@ int trashcan_soft_delete_core(const wchar_t *path, bool init_com)
 	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_PARSE, error_2) }
 
 	hr = pfo->lpVtbl->DeleteItem(pfo, pSI, NULL);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_3) }
 
 	hr = pfo->lpVtbl->PerformOperations(pfo);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_3) }
+
+error_3:
+	pSI->lpVtbl->Release(pSI);
 
 error_2:
 	pfo->lpVtbl->Release(pfo);
