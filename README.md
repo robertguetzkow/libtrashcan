@@ -40,22 +40,18 @@ The library is in early development and the goal is to reach a mature state. If 
 ## Change log
 
 ### v1.0.0-alpha - 2022-04-13
-**Changes**
--Change of API: All function are prefix with `trashcan` to avoid name collisions
--Contribution by Mark Wagner ([Carnildo](https://github.com/Carnildo)): Add `extern "C"` to permit use in C++
--Bug fix for issue #10: Reference count is now decremented for the `IShellItem *pSI`
--Bug fix for issue #12: Reference count for the `IFileOperation *pfo` is only decremented when `CoCreateInstance` is successful
--Bug fix: Correct path construction when `HOME` or `XDG_DATA_HOME` is set to the root directory
+- Change of API: All function are prefixed with `trashcan` to avoid name collisions
+- Contribution by Mark Wagner ([Carnildo](https://github.com/Carnildo)): Add `extern "C"` to permit use in C++
+- Bug fix for issue #10: Reference count is now decremented for the `IShellItem *pSI`
+- Bug fix for issue #12: Reference count for the `IFileOperation *pfo` is only decremented when `CoCreateInstance` is successful
+- Bug fix: Correct path construction when `HOME` or `XDG_DATA_HOME` is set to the root directory
 
 ### v0.3.3-alpha - 2019-05-25
-**Changes**
--Support for macOS
+- Support for macOS
 
 ### v0.2.0-alpha - 2019-04-26
-**Changes**
--Correct multibyte to wide character conversion on Windows, supports UTF-8 encoded strings
--API gives access to the "core" functions on Windows that allow to use `wchar_t*` directly
+- Correct multibyte to wide character conversion on Windows, supports UTF-8 encoded strings
+- API gives access to the "core" functions on Windows that allow to use `wchar_t*` directly
 
 ### v0.1.0-alpha - 2019-04-24
-**Changes**
--Initial version
+- Initial version
