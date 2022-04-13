@@ -24,8 +24,8 @@
 /**
  * @file trashcan.c
  * @author Robert Guetzkow
- * @version 0.3.3-alpha
- * @date 2019-04-18
+ * @version 1.0.0-alpha
+ * @date 2022-04-13
  * @brief libtrashcan - A library for putting a file or directory in the trashcan.
  *
  * This library implements trashcan functionality for Windows, macOS, Linux and *BSD.
