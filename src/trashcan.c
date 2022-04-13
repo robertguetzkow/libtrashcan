@@ -169,19 +169,22 @@ int trashcan_soft_delete_core(const wchar_t *path, bool init_com)
 		hr = pfo->lpVtbl->SetOperationFlags(pfo, FOF_ALLOWUNDO | FOF_SILENT | FOF_NOERRORUI | FOFX_EARLYFAILURE);
 	}
 
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_FLAGS, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_FLAGS, error_3) }
 
 	hr = SHCreateItemFromParsingName(full_path, NULL, &IID_IShellItem, (void**)&pSI);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_PARSE, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_PARSE, error_3) }
 
 	hr = pfo->lpVtbl->DeleteItem(pfo, pSI, NULL);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_SETOP, error_4) }
 
 	hr = pfo->lpVtbl->PerformOperations(pfo);
-	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_2) }
+	if (FAILED(hr)) { HANDLE_ERROR(status, LIBTRASHCAN_EXECOP, error_4) }
 
-error_2:
+error_4:
+	pSI->lpVtbl->Release(pSI);
+error_3:
 	pfo->lpVtbl->Release(pfo);
+error_2:
 	if (init_com)
 	{
 		CoUninitialize(); /* Has to be uninitialized when CoInitializeEx returns either S_OK or S_FALSE */
