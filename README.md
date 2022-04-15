@@ -31,12 +31,6 @@ cmake --build . --config Release
 ## License
 The project is distributed under the [MIT license](./LICENSE).
 
-## Contribute
-The library is in early development and the goal is to reach a mature state. If you'd like to contribute, check the [issue tracker](https://github.com/robertguetzkow/libtrashcan/issues) or submit [pull requests](https://github.com/robertguetzkow/libtrashcan/pulls) for improvements. In particular I would be grateful for contributions regarding:
-- Identifying cross-platform issues
-- Stability / Reliability
-- Security
-
 ## Change log
 
 ### v1.0.0-alpha - 2022-04-13
