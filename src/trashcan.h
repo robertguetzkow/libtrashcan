@@ -24,8 +24,8 @@
 /**
  * @file trashcan.h
  * @author Robert Guetzkow
- * @version 0.3.3-alpha
- * @date 2019-04-18
+ * @version 1.0.0-alpha
+ * @date 2022-04-13
  * @brief Header file defining libtrashcan's API
  *
  * This header defines the function signatures for the supported operating systems.
