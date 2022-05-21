@@ -1,6 +1,8 @@
 # libtrashcan
 libtrashcan is a cross-platform C library for moving files and directories to the trashcan. 
 
+> Note: The library is no longer being actively developed.
+
 ## Supported Operating Systems
 - Linux
 - FreeBSD, OpenBSD, NetBSD
